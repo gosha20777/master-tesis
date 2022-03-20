@@ -22,3 +22,11 @@ def read_bayer_image(path: str):
     ch_Gr = raw[1::2, 0::2]
     combined = np.dstack((ch_B, ch_Gb, ch_R, ch_Gr))
     return combined.astype(np.float32) / (4 * 255)
+
+
+def resize_bayer_image(image, w, h, color=(0, 0, 0, 0)):
+    """Create new image(numpy array) filled with certain color in BGR"""
+    r_image = np.zeros((h, w, 4), np.float32)
+    r_image[:] = color
+    r_image[:image.shape[0],:image.shape[1],:image.shape[2]] = image[:min(image.shape[0], w),:min(image.shape[1], h),:image.shape[2]]
+    return r_image
