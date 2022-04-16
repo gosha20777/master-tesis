@@ -1,5 +1,6 @@
 import time
 from datetime import datetime
+import skimage
 from skimage import measure
 import os
 import cv2
@@ -242,14 +243,12 @@ def to_ssim_skimage(dehaze, gt):
         for ind in range(len(dehaze_list))
     ]
     ssim_list = [
-        measure.compare_ssim(
+        skimage.metrics.structural_similarity(
             dehaze_list_np[ind],
             gt_list_np[ind],
             data_range=1,
             multichannel=True,
-            sigma=1.5,
-            gaussian_weights=True,
-            use_sample_covariance=False) for ind in range(len(dehaze_list))
+            gaussian_weights=True) for ind in range(len(dehaze_list))
     ]
 
     return ssim_list
