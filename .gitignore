@@ -281,3 +281,5 @@ __pycache__/
 weights/
 .ipynb_checkpoints/
 results/
+*.h5
+*.pkl
