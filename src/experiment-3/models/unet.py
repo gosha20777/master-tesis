@@ -1,5 +1,11 @@
 from tensorflow.keras import Model
-from tensorflow.keras.layers import Input, Concatenate, Convolution2D, MaxPooling2D, UpSampling2D
+from tensorflow.keras.layers import (
+    Input, 
+    Concatenate, 
+    Convolution2D, 
+    MaxPooling2D, 
+    UpSampling2D
+)
 
 
 def get_model(input_shape=(None, None, 32)): 
@@ -18,9 +24,9 @@ def get_model(input_shape=(None, None, 32)):
     pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
 
     conv4 = Convolution2D(512, (3, 3), activation='relu', padding='same')(pool3)
-    conv4 = Convolution2D(512, (3, 3), activation='relu', padding='same')(conv4)
+    feature = Convolution2D(512, (3, 3), activation='relu', padding='same')(conv4)
     
-    up5 = Concatenate()([Convolution2D(256, (2, 2), activation='relu', padding='same')(UpSampling2D(size=(2, 2))(conv4)), conv3])
+    up5 = Concatenate()([Convolution2D(256, (2, 2), activation='relu', padding='same')(UpSampling2D(size=(2, 2))(feature)), conv3])
     conv5 = Convolution2D(256, (3, 3), activation='relu', padding='same')(up5)
     conv5 = Convolution2D(256, (3, 3), activation='relu', padding='same')(conv5)
 
@@ -37,4 +43,4 @@ def get_model(input_shape=(None, None, 32)):
     conv8 = Convolution2D(16, (3, 3), activation='relu', padding='same')(conv8)
 
     x_out = Convolution2D(3, (1, 1), activation='sigmoid')(conv8)
-    return Model(inputs=inputs, outputs=x_out)
+    return Model(inputs=inputs, outputs=[x_out, feature])
