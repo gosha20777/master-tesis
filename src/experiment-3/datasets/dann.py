@@ -32,7 +32,10 @@ class DannLoader(keras.utils.Sequence):
             s_x, s_y = self.source_loader.__getitem__(idx)
             t_x, t_y = self.target_loader.__getitem__(i)
 
-        d_s_y = np.zeros(shape=(self.batch_size))
-        d_t_y = np.ones(shape=(self.batch_size))
+        d_s_y = np.zeros(shape=(self.batch_size, 1))
+        d_t_y = np.ones(shape=(self.batch_size, 1))
         
-        return s_x, t_x, s_y, t_y, d_s_y, d_t_y
+        x = (s_x, t_x)
+        y = (s_y, t_y, d_s_y, d_t_y)
+        
+        return x, y 

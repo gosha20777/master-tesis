@@ -3,7 +3,7 @@ from tensorflow.keras.layers import Input, Convolution2D, GlobalAveragePooling2D
 from models.reverce_gradient import GradientReversal
 
 
-def get_model(input_shape=(224, 224, 512), hp_lambda=1.0): 
+def get_model(input_shape=(None, None, 512), hp_lambda=1.0): 
     inputs = Input(shape=input_shape)
     grad_reverse = GradientReversal(hp_lambda=hp_lambda)(inputs)
 

@@ -281,5 +281,6 @@ __pycache__/
 weights/
 .ipynb_checkpoints/
 results/
+logs/
 *.h5
 *.pkl

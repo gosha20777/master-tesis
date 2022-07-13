@@ -2,22 +2,20 @@ import tensorflow as tf
 from tensorflow.keras import Model
 
 
-class SourceNet(tf.keras.Model):
+class SingleNet(tf.keras.Model):
     def __init__(
             self, 
-            source_encoder,
-            unet,
+            encoder,
+            u_net,
         ):
-        super(SourceNet, self).__init__()
-        self.source_encoder = source_encoder
-        self.unet = unet
+        super(SingleNet, self).__init__()
 
         self.model_predict = Model(
-            inputs=self.source_encoder.inputs,
+            inputs=encoder.inputs,
             outputs=[
-                self.unet(
-                    self.source_encoder(
-                        self.source_encoder.inputs
+                u_net(
+                    encoder(
+                        encoder.inputs
                     )
                 )[0]
             ]
@@ -42,7 +40,7 @@ class SourceNet(tf.keras.Model):
             temperature: Temperature for softening probability distributions.
                 Larger temperature gives softer distributions.
         """
-        super(SourceNet, self).compile(optimizer=optimizer, metrics=metrics)
+        super(SingleNet, self).compile(optimizer=optimizer, metrics=metrics)
         self.loss_fn = loss_fn
 
     def train_step(self, data):
@@ -88,38 +86,33 @@ class SourceNet(tf.keras.Model):
         return self.model_predict(inputs)
 
 
-
 class DannNet(tf.keras.Model):
     def __init__(
             self, 
             source_encoder, 
             target_encoder, 
-            unet, 
+            u_net, 
             domain_classifyer,
         ):
         super(DannNet, self).__init__()
-        self.source_encoder = source_encoder
-        self.target_encoder = target_encoder
-        self.unet = unet
-        self.domain_classifyer = domain_classifyer
 
         self.s_model_predict = Model(
-            inputs=self.source_encoder.inputs,
+            inputs=source_encoder.inputs,
             outputs=[
-                self.unet(
-                    self.source_encoder(
-                        self.source_encoder.inputs
+                u_net(
+                    source_encoder(
+                        source_encoder.inputs
                     )
                 )[0]
             ]
         )
         self.s_model_domain = Model(
-            inputs=self.source_encoder.inputs,
+            inputs=source_encoder.inputs,
             outputs=[
-                self.domain_classifyer(
-                    self.unet(
-                        self.source_encoder(
-                            self.source_encoder.inputs
+                domain_classifyer(
+                    u_net(
+                        source_encoder(
+                            source_encoder.inputs
                         )
                     )[1]
                 )
@@ -127,22 +120,22 @@ class DannNet(tf.keras.Model):
         )
         
         self.t_model_predict = Model(
-            inputs=self.target_encoder.inputs,
+            inputs=target_encoder.inputs,
             outputs=[
-                self.unet(
-                    self.target_encoder(
-                        self.target_encoder.inputs
+                u_net(
+                    target_encoder(
+                        target_encoder.inputs
                     )
                 )[0]
             ]
         )
         self.t_model_domain = Model(
-            inputs=self.target_encoder.inputs,
+            inputs=target_encoder.inputs,
             outputs=[
-                self.domain_classifyer(
-                    self.unet(
-                        self.target_encoder(
-                            self.target_encoder.inputs
+                domain_classifyer(
+                    u_net(
+                        target_encoder(
+                            target_encoder.inputs
                         )
                     )[1]
                 )
@@ -177,8 +170,10 @@ class DannNet(tf.keras.Model):
 
     def train_step(self, data):
         # Unpack data
-        s_x, t_x, s_y, t_y, d_s_y, d_t_y = data
-
+        x, y = data
+        s_x, t_x = x 
+        s_y, t_y, d_s_y, d_t_y = y
+        
         # Forward
         with tf.GradientTape() as tape:
             s_predictions = self.s_model_predict(s_x, training=True)
@@ -207,6 +202,7 @@ class DannNet(tf.keras.Model):
         self.optimizer.apply_gradients(zip(d_t_model_gradients, self.t_model_domain.trainable_variables))
 
         # Update the metrics configured in `compile()`.
+        t_y = tf.convert_to_tensor(t_y)
         self.compiled_metrics.update_state(t_y, t_predictions)
 
         # Return a dict of performance
@@ -219,10 +215,12 @@ class DannNet(tf.keras.Model):
             }
         )
         return results
-
+    
     def test_step(self, data):
         # Unpack the data
-        s_x, t_x, s_y, t_y, d_s_y, d_t_y = data
+        x, y = data
+        s_x, t_x = x 
+        s_y, t_y, d_s_y, d_t_y = y
 
         # Compute predictions
         y_prediction = self.t_model_predict(t_x, training=False)
@@ -231,10 +229,18 @@ class DannNet(tf.keras.Model):
         t_loss = self.t_loss_fn(t_y, y_prediction)
 
         # Update the metrics.
+        t_y = tf.convert_to_tensor(t_y)
         self.compiled_metrics.update_state(t_y, y_prediction)
 
         # Return a dict of performance
         results = {m.name: m.result() for m in self.metrics}
         results.update({"target_loss": t_loss})
         return results
-   
+    
+    def call(self, inputs):
+        s_x, t_x = inputs
+        s_y = self.s_model_predict(s_x, training=False)
+        t_y = self.t_model_predict(t_x, training=False)
+        d_s_y = self.s_model_domain(s_x, training=False)
+        d_t_y = self.t_model_domain(t_x, training=False)
+        return s_y, t_y, d_s_y, d_t_y
