@@ -7,12 +7,12 @@
 
 ### Data
 
-| Dataset             | Number of crops / images |
-| ------------------- | ------------------------ |
-| Zurich Raw2Rgb      | 46839                    |
-| MAI 2021            | 24161                    |
-| Samsung S7          |                          |
-| Google Pixel (ours) |                          |
+| Dataset             | Number of crops / images | Camera         |
+| ------------------- | ------------------------ | -------------- |
+| Zurich Raw2Rgb      | 46839                    | Sony IMX380    |
+| MAI 2021            | 24161                    | Sony IMX586    |
+| Samsung S7          |                          | Samsung S5K2L1 |
+| Google Pixel (ours) |                          |                |
 
 ### Results of Domain Adaptation
 
