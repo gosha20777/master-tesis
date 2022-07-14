@@ -64,3 +64,12 @@
 | ![](_figures/da-zurich2mai-10p-06.png) | ![](_figures/tl-zurich2mai-10p-06.png) | ![](_figures/gt-zurich2mai-10p-06.png) |
 
 - [Zurich -> MAI] Domain adaptation 1 image vs 10
+
+| 10 images                              | 5 images                              | 1 image                               | Ground Trough                          |
+| -------------------------------------- | ------------------------------------- | ------------------------------------- | -------------------------------------- |
+| ![](_figures/da-zurich2mai-10i-01.png) | ![](_figures/da-zurich2mai-5i-01.png) | ![](_figures/da-zurich2mai-1i-01.png) | ![](_figures/gt-zurich2mai-10i-01.png) |
+| ![](_figures/da-zurich2mai-10i-02.png) | ![](_figures/da-zurich2mai-5i-02.png) | ![](_figures/da-zurich2mai-1i-02.png) | ![](_figures/gt-zurich2mai-10i-02.png) |
+| ![](_figures/da-zurich2mai-10i-03.png) | ![](_figures/da-zurich2mai-5i-03.png) | ![](_figures/da-zurich2mai-1i-03.png) | ![](_figures/gt-zurich2mai-10i-03.png) |
+| ![](_figures/da-zurich2mai-10i-04.png) | ![](_figures/da-zurich2mai-5i-04.png) | ![](_figures/da-zurich2mai-1i-04.png) | ![](_figures/gt-zurich2mai-10i-04.png) |
+| ![](_figures/da-zurich2mai-10i-05.png) | ![](_figures/da-zurich2mai-5i-05.png) | ![](_figures/da-zurich2mai-1i-05.png) | ![](_figures/gt-zurich2mai-10i-05.png) |
+
